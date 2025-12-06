@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title><%= title %> | Travel Agency</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <style>
+    body { font-family: Arial, sans-serif; margin: 0; padding: 0; }
+    header, footer { background: #0d6efd; color: #fff; padding: 10px 20px; }
+    main { padding: 20px; }
+    a { color: #0d6efd; text-decoration: none; }
+    .nav { display: flex; justify-content: space-between; align-items: center; }
+    .error { color: red; margin-bottom: 10px; }
+    .container { max-width: 600px; margin: 0 auto; }
+    input, button { padding: 8px; margin: 5px 0; width: 100%; box-sizing: border-box; }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="nav">
+      <div><strong>Travel Agency</strong></div>
+      <div>
+        <% if (currentUser) { %>
+          أهلاً، <strong><%= currentUser.name %></strong> |
+          <a href="/logout" style="color: #fff;">Logout</a>
+        <% } else { %>
+          <a href="/login" style="color: #fff; margin-right: 10px;">Login</a>
+          <a href="/register" style="color: #fff;">Register</a>
+        <% } %>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <div class="container">
+      <%- body %>
+    </div>
+  </main>
+
+  <footer>
+    <small>&copy; <%= new Date().getFullYear() %> Travel Agency</small>
+  </footer>
+</body>
+</html>

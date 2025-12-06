@@ -1,0 +1,27 @@
+<%- include('layout', { title: 'Register' }) %>
+
+<h2>تسجيل مستخدم جديد</h2>
+
+<% if (error) { %>
+  <p class="error"><%= error %></p>
+<% } %>
+
+<form action="/register" method="POST">
+  <label>الاسم الكامل</label>
+  <input type="text" name="name" placeholder="Name" />
+
+  <label>الإيميل</label>
+  <input type="email" name="email" placeholder="Email" />
+
+  <label>كلمة المرور</label>
+  <input type="password" name="password" placeholder="Password" />
+
+  <label>تأكيد كلمة المرور</label>
+  <input type="password" name="confirmPassword" placeholder="Confirm Password" />
+
+  <button type="submit">تسجيل</button>
+</form>
+
+<p>
+  عندك حساب؟ <a href="/login">تسجيل الدخول</a>
+</p>
