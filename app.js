@@ -16,6 +16,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 // Middleware لقراءة البيانات من الفورم
 app.use(express.urlencoded({ extended: true }));
+app.use(express.json()); // إضافة دعم JSON
 
 // إعداد الـ Session
 app.use(
@@ -23,6 +24,9 @@ app.use(
     secret: process.env.SESSION_SECRET,
     resave: false,
     saveUninitialized: false,
+    cookie: {
+      maxAge: 1000 * 60 * 60 * 24 // 24 hours
+    }
   })
 );
 

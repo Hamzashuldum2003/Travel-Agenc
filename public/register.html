@@ -1,8 +1,9 @@
 <!DOCTYPE html>
-<html lang="ar">
+<html lang="ar" dir="rtl">
 <head>
   <meta charset="UTF-8" />
-  <title>Register</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>التسجيل - Travel Agency</title>
   <link rel="stylesheet" href="/style.css" />
 </head>
 <body>
@@ -10,25 +11,78 @@
   <div class="container">
     <h2>تسجيل مستخدم جديد</h2>
 
-    <form action="/register" method="POST">
+    <div id="error-message" class="error-message" style="display: none;"></div>
+    <div id="success-message" class="success-message" style="display: none;"></div>
 
+    <form id="register-form">
       <label>الاسم الكامل</label>
-      <input type="text" name="name" required />
+      <input type="text" name="name" id="name" required />
 
       <label>الإيميل</label>
-      <input type="email" name="email" required />
+      <input type="email" name="email" id="email" required />
 
       <label>كلمة المرور</label>
-      <input type="password" name="password" required />
+      <input type="password" name="password" id="password" required minlength="6" />
 
       <label>تأكيد كلمة المرور</label>
-      <input type="password" name="confirmPassword" required />
+      <input type="password" name="confirmPassword" id="confirmPassword" required minlength="6" />
 
       <button type="submit">تسجيل</button>
     </form>
 
-    <p>عندك حساب؟ <a href="/login.html">تسجيل الدخول</a></p>
+    <p>عندك حساب؟ <a href="/login">تسجيل الدخول</a></p>
   </div>
+
+  <script>
+    const form = document.getElementById('register-form');
+    const errorMessage = document.getElementById('error-message');
+    const successMessage = document.getElementById('success-message');
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      
+      // إخفاء الرسائل السابقة
+      errorMessage.style.display = 'none';
+      successMessage.style.display = 'none';
+      
+      const formData = new FormData(form);
+      const data = {
+        name: formData.get('name'),
+        email: formData.get('email'),
+        password: formData.get('password'),
+        confirmPassword: formData.get('confirmPassword')
+      };
+
+      try {
+        const response = await fetch('/register', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+          },
+          body: new URLSearchParams(data)
+        });
+
+        const result = await response.json();
+
+        if (result.success) {
+          successMessage.textContent = 'تم التسجيل بنجاح! جاري تحويلك...';
+          successMessage.style.display = 'block';
+          errorMessage.style.display = 'none';
+          form.reset();
+          setTimeout(() => {
+            window.location.href = result.redirect || '/dashboard';
+          }, 1500);
+        } else {
+          errorMessage.textContent = result.error;
+          errorMessage.style.display = 'block';
+          successMessage.style.display = 'none';
+        }
+      } catch (error) {
+        errorMessage.textContent = 'حدث خطأ في الاتصال';
+        errorMessage.style.display = 'block';
+      }
+    });
+  </script>
 
 </body>
 </html>

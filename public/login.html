@@ -1,8 +1,9 @@
 <!DOCTYPE html>
-<html lang="ar">
+<html lang="ar" dir="rtl">
 <head>
   <meta charset="UTF-8" />
-  <title>Login</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>تسجيل الدخول - Travel Agency</title>
   <link rel="stylesheet" href="/style.css" />
 </head>
 <body>
@@ -10,18 +11,70 @@
   <div class="container">
     <h2>تسجيل الدخول</h2>
 
-    <form action="/login" method="POST">
+    <div id="error-message" class="error-message" style="display: none;"></div>
+
+    <form id="login-form">
       <label>الإيميل</label>
-      <input type="email" name="email" required />
+      <input type="email" name="email" id="email" required />
 
       <label>كلمة المرور</label>
-      <input type="password" name="password" required />
+      <input type="password" name="password" id="password" required />
 
       <button type="submit">دخول</button>
     </form>
 
-    <p>ما عندك حساب؟ <a href="/register.html">سجّل الآن</a></p>
+    <p>ما عندك حساب؟ <a href="/register">سجّل الآن</a></p>
   </div>
+
+  <script>
+    const form = document.getElementById('login-form');
+    const errorMessage = document.getElementById('error-message');
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      
+      // إخفاء رسائل الخطأ السابقة
+      errorMessage.style.display = 'none';
+      
+      const formData = new FormData(form);
+      const data = {
+        email: formData.get('email'),
+        password: formData.get('password')
+      };
+
+      try {
+        const response = await fetch('/login', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+          },
+          body: new URLSearchParams(data)
+        });
+
+        const result = await response.json();
+
+        if (result.success) {
+          // إظهار رسالة نجاح
+          errorMessage.style.display = 'none';
+          errorMessage.className = 'success-message';
+          errorMessage.textContent = 'تم تسجيل الدخول بنجاح! جاري التحويل...';
+          errorMessage.style.display = 'block';
+          
+          // الانتقال للصفحة الرئيسية
+          setTimeout(() => {
+            window.location.href = result.redirect || '/dashboard';
+          }, 1000);
+        } else {
+          errorMessage.className = 'error-message';
+          errorMessage.textContent = result.error;
+          errorMessage.style.display = 'block';
+        }
+      } catch (error) {
+        errorMessage.textContent = 'حدث خطأ في الاتصال';
+        errorMessage.style.display = 'block';
+      }
+    });
+  </script>
 
 </body>
 </html>

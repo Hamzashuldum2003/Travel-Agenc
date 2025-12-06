@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>لوحة التحكم - Travel Agency</title>
+  <link rel="stylesheet" href="/style.css" />
+</head>
+<body>
+
+  <nav class="navbar">
+    <div class="nav-container">
+      <h1 class="logo">🌍 Travel Agency</h1>
+      <div class="nav-links">
+        <span id="user-name" class="user-name"></span>
+        <a href="/logout" class="logout-btn">تسجيل الخروج</a>
+      </div>
+    </div>
+  </nav>
+
+  <div class="dashboard-container">
+    <aside class="sidebar">
+      <ul class="sidebar-menu">
+        <li class="menu-item active">
+          <a href="#dashboard">
+            <span>📊</span>
+            <span>لوحة التحكم</span>
+          </a>
+        </li>
+        <li class="menu-item">
+          <a href="#trips">
+            <span>✈️</span>
+            <span>الرحلات</span>
+          </a>
+        </li>
+        <li class="menu-item">
+          <a href="#bookings">
+            <span>📝</span>
+            <span>حجوزاتي</span>
+          </a>
+        </li>
+        <li class="menu-item">
+          <a href="#profile">
+            <span>👤</span>
+            <span>الملف الشخصي</span>
+          </a>
+        </li>
+        <li class="menu-item admin-only" style="display: none;">
+          <a href="#admin">
+            <span>⚙️</span>
+            <span>إدارة النظام</span>
+          </a>
+        </li>
+      </ul>
+    </aside>
+
+    <main class="main-content">
+      <div class="welcome-section">
+        <h2>مرحباً بك، <span id="welcome-name"></span>! 👋</h2>
+        <p>هذه هي لوحة التحكم الخاصة بك في Travel Agency</p>
+      </div>
+
+      <div class="stats-grid">
+        <div class="stat-card">
+          <div class="stat-icon">✈️</div>
+          <div class="stat-info">
+            <h3>الرحلات المتاحة</h3>
+            <p class="stat-number">25</p>
+          </div>
+        </div>
+
+        <div class="stat-card">
+          <div class="stat-icon">📝</div>
+          <div class="stat-info">
+            <h3>حجوزاتي</h3>
+            <p class="stat-number">0</p>
+          </div>
+        </div>
+
+        <div class="stat-card">
+          <div class="stat-icon">⭐</div>
+          <div class="stat-info">
+            <h3>التقييمات</h3>
+            <p class="stat-number">0</p>
+          </div>
+        </div>
+
+        <div class="stat-card">
+          <div class="stat-icon">💰</div>
+          <div class="stat-info">
+            <h3>إجمالي الإنفاق</h3>
+            <p class="stat-number">$0</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="content-section">
+        <h3>الرحلات الشائعة</h3>
+        <div class="trips-grid">
+          <div class="trip-card">
+            <div class="trip-image">🏖️</div>
+            <div class="trip-details">
+              <h4>باريس - رحلة شهر عسل</h4>
+              <p>🇫🇷 فرنسا | 7 أيام</p>
+              <p class="trip-price">$2,500</p>
+              <button class="btn-primary">احجز الآن</button>
+            </div>
+          </div>
+
+          <div class="trip-card">
+            <div class="trip-image">🏔️</div>
+            <div class="trip-details">
+              <h4>سويسرا - رحلة مغامرات</h4>
+              <p>🇨🇭 سويسرا | 5 أيام</p>
+              <p class="trip-price">$3,200</p>
+              <button class="btn-primary">احجز الآن</button>
+            </div>
+          </div>
+
+          <div class="trip-card">
+            <div class="trip-image">🌴</div>
+            <div class="trip-details">
+              <h4>المالديف - رحلة رفاهية</h4>
+              <p>🇲🇻 المالديف | 10 أيام</p>
+              <p class="trip-price">$5,000</p>
+              <button class="btn-primary">احجز الآن</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <script>
+    // جلب معلومات المستخدم
+    async function loadUserInfo() {
+      try {
+        const response = await fetch('/api/user');
+        
+        if (!response.ok) {
+          throw new Error('Not authenticated');
+        }
+        
+        const data = await response.json();
+        
+        if (data.success && data.user) {
+          document.getElementById('user-name').textContent = data.user.name;
+          document.getElementById('welcome-name').textContent = data.user.name;
+          
+          // عرض قسم الأدمن إذا كان المستخدم أدمن
+          if (data.user.role === 'admin') {
+            document.querySelector('.admin-only').style.display = 'block';
+          }
+        } else {
+          window.location.href = '/login';
+        }
+      } catch (error) {
+        console.error('Error loading user info:', error);
+        window.location.href = '/login';
+      }
+    }
+
+    // تحميل المعلومات عند فتح الصفحة
+    window.addEventListener('DOMContentLoaded', loadUserInfo);
+
+    // معالجة القائمة الجانبية
+    const menuItems = document.querySelectorAll('.menu-item');
+    menuItems.forEach(item => {
+      item.addEventListener('click', function(e) {
+        // السماح بالضغط على تسجيل الخروج
+        if (this.querySelector('a').getAttribute('href') === '/logout') {
+          return;
+        }
+        
+        e.preventDefault();
+        menuItems.forEach(i => i.classList.remove('active'));
+        this.classList.add('active');
+      });
+    });
+  </script>
+
+</body>
+</html>

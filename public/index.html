@@ -1,18 +1,90 @@
 <!DOCTYPE html>
-<html lang="ar">
+<html lang="ar" dir="rtl">
 <head>
   <meta charset="UTF-8" />
-  <title>Home</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>الصفحة الرئيسية - Travel Agency</title>
   <link rel="stylesheet" href="/style.css" />
 </head>
-<body>
+<body class="landing-page">
 
-  <div class="container">
-    <h1>الصفحة الرئيسية</h1>
-    <p>مرحبًا بك في Travel Agency</p>
+  <nav class="landing-nav">
+    <div class="nav-container">
+      <h1 class="logo">🌍 Travel Agency</h1>
+      <div class="nav-links">
+        <a href="/login" class="nav-link">تسجيل الدخول</a>
+        <a href="/register" class="nav-btn">تسجيل حساب جديد</a>
+      </div>
+    </div>
+  </nav>
 
-    <a href="/login">login </a>
-  </div>
+  <section class="hero">
+    <div class="hero-content">
+      <h1 class="hero-title">اكتشف العالم معنا</h1>
+      <p class="hero-subtitle">أفضل العروض السياحية والرحلات حول العالم</p>
+      <div class="hero-buttons">
+        <a href="/register" class="btn-hero primary">ابدأ الآن</a>
+        <a href="#features" class="btn-hero secondary">اعرف المزيد</a>
+      </div>
+    </div>
+  </section>
+
+  <section id="features" class="features">
+    <div class="features-container">
+      <h2 class="section-title">لماذا تختارنا؟</h2>
+      <div class="features-grid">
+        <div class="feature-card">
+          <div class="feature-icon">✈️</div>
+          <h3>رحلات متنوعة</h3>
+          <p>أكثر من 25 وجهة سياحية حول العالم</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon">💰</div>
+          <h3>أسعار منافسة</h3>
+          <p>أفضل العروض والخصومات الحصرية</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon">🛡️</div>
+          <h3>حجز آمن</h3>
+          <p>نظام دفع آمن ومشفر بالكامل</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon">⭐</div>
+          <h3>تقييمات ممتازة</h3>
+          <p>آلاف العملاء الراضين عن خدماتنا</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="cta">
+    <div class="cta-content">
+      <h2>ابدأ مغامرتك القادمة الآن!</h2>
+      <p>سجل حسابك واحجز رحلتك الأولى بخصم 10%</p>
+      <a href="/register" class="btn-cta">سجل الآن</a>
+    </div>
+  </section>
+
+  <footer class="footer">
+    <div class="footer-content">
+      <p>&copy; 2024 Travel Agency. جميع الحقوق محفوظة</p>
+    </div>
+  </footer>
+
+  <script>
+    // التحقق من حالة تسجيل الدخول
+    fetch('/api/user')
+      .then(response => response.json())
+      .then(data => {
+        if (data.success) {
+          // المستخدم مسجل دخول، توجيهه للدشبورد
+          window.location.href = '/dashboard';
+        }
+      })
+      .catch(() => {
+        // المستخدم غير مسجل دخول، عرض الصفحة الرئيسية
+      });
+  </script>
 
 </body>
 </html>
