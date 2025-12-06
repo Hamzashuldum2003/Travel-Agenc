@@ -3,40 +3,139 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>التسجيل - Travel Agency</title>
+  <title>إنشاء حساب - Travel Agency</title>
   <link rel="stylesheet" href="/style.css" />
 </head>
 <body>
 
-  <div class="container">
-    <h2>تسجيل مستخدم جديد</h2>
+  <div class="auth-container">
+    <div class="auth-header">
+      <h1 class="auth-logo">🌍 Travel Agency</h1>
+      <p class="auth-subtitle">أنشئ حسابك وابدأ رحلتك معنا</p>
+    </div>
 
     <div id="error-message" class="error-message" style="display: none;"></div>
     <div id="success-message" class="success-message" style="display: none;"></div>
 
-    <form id="register-form">
-      <label>الاسم الكامل</label>
-      <input type="text" name="name" id="name" required />
+    <form id="register-form" class="auth-form">
+      <div class="form-group">
+        <label for="name">الاسم الكامل</label>
+        <input 
+          type="text" 
+          name="name" 
+          id="name" 
+          placeholder="أدخل اسمك الكامل"
+          required 
+          minlength="3"
+        />
+      </div>
 
-      <label>الإيميل</label>
-      <input type="email" name="email" id="email" required />
+      <div class="form-group">
+        <label for="email">البريد الإلكتروني</label>
+        <input 
+          type="email" 
+          name="email" 
+          id="email" 
+          placeholder="example@email.com"
+          required 
+        />
+      </div>
 
-      <label>كلمة المرور</label>
-      <input type="password" name="password" id="password" required minlength="6" />
+      <div class="form-row">
+        <div class="form-group">
+          <label for="phone">رقم الهاتف (اختياري)</label>
+          <input 
+            type="tel" 
+            name="phone" 
+            id="phone" 
+            placeholder="+966 5XX XXX XXX"
+          />
+        </div>
 
-      <label>تأكيد كلمة المرور</label>
-      <input type="password" name="confirmPassword" id="confirmPassword" required minlength="6" />
+        <div class="form-group">
+          <label for="dateOfBirth">تاريخ الميلاد (اختياري)</label>
+          <input 
+            type="date" 
+            name="dateOfBirth" 
+            id="dateOfBirth" 
+          />
+        </div>
+      </div>
 
-      <button type="submit">تسجيل</button>
+      <div class="form-group">
+        <label for="address">العنوان (اختياري)</label>
+        <input 
+          type="text" 
+          name="address" 
+          id="address" 
+          placeholder="المدينة، الدولة"
+        />
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label for="password">كلمة المرور</label>
+          <input 
+            type="password" 
+            name="password" 
+            id="password" 
+            placeholder="••••••••"
+            required 
+            minlength="6"
+          />
+          <small class="form-hint">على الأقل 6 أحرف</small>
+        </div>
+
+        <div class="form-group">
+          <label for="confirmPassword">تأكيد كلمة المرور</label>
+          <input 
+            type="password" 
+            name="confirmPassword" 
+            id="confirmPassword" 
+            placeholder="••••••••"
+            required 
+            minlength="6"
+          />
+        </div>
+      </div>
+
+      <div class="form-group checkbox-group">
+        <label class="checkbox-label">
+          <input type="checkbox" name="terms" id="terms" required />
+          <span>أوافق على <a href="#" class="link-inline">شروط الخدمة</a> و <a href="#" class="link-inline">سياسة الخصوصية</a></span>
+        </label>
+      </div>
+
+      <button type="submit" class="btn-submit">
+        <span class="btn-text">إنشاء حساب</span>
+        <span class="btn-loader" style="display: none;">⏳ جاري التحميل...</span>
+      </button>
     </form>
 
-    <p>عندك حساب؟ <a href="/login">تسجيل الدخول</a></p>
+    <div class="auth-footer">
+      <p>لديك حساب بالفعل؟ <a href="/login">سجّل الدخول</a></p>
+      <p><a href="/" class="back-link">← العودة للصفحة الرئيسية</a></p>
+    </div>
   </div>
 
   <script>
     const form = document.getElementById('register-form');
     const errorMessage = document.getElementById('error-message');
     const successMessage = document.getElementById('success-message');
+    const btnText = document.querySelector('.btn-text');
+    const btnLoader = document.querySelector('.btn-loader');
+    const submitBtn = document.querySelector('.btn-submit');
+    const password = document.getElementById('password');
+    const confirmPassword = document.getElementById('confirmPassword');
+
+    // التحقق من تطابق كلمات المرور
+    confirmPassword.addEventListener('input', function() {
+      if (password.value !== confirmPassword.value) {
+        confirmPassword.setCustomValidity('كلمات المرور غير متطابقة');
+      } else {
+        confirmPassword.setCustomValidity('');
+      }
+    });
 
     form.addEventListener('submit', async (e) => {
       e.preventDefault();
@@ -45,10 +144,18 @@
       errorMessage.style.display = 'none';
       successMessage.style.display = 'none';
       
+      // إظهار حالة التحميل
+      btnText.style.display = 'none';
+      btnLoader.style.display = 'inline';
+      submitBtn.disabled = true;
+      
       const formData = new FormData(form);
       const data = {
         name: formData.get('name'),
         email: formData.get('email'),
+        phone: formData.get('phone'),
+        address: formData.get('address'),
+        dateOfBirth: formData.get('dateOfBirth'),
         password: formData.get('password'),
         confirmPassword: formData.get('confirmPassword')
       };
@@ -65,21 +172,30 @@
         const result = await response.json();
 
         if (result.success) {
-          successMessage.textContent = 'تم التسجيل بنجاح! جاري تحويلك...';
+          successMessage.textContent = '✓ تم إنشاء حسابك بنجاح! جاري تحويلك...';
           successMessage.style.display = 'block';
-          errorMessage.style.display = 'none';
           form.reset();
+          
           setTimeout(() => {
             window.location.href = result.redirect || '/dashboard';
           }, 1500);
         } else {
-          errorMessage.textContent = result.error;
+          errorMessage.textContent = '✗ ' + result.error;
           errorMessage.style.display = 'block';
-          successMessage.style.display = 'none';
+          
+          // إعادة تفعيل الزر
+          btnText.style.display = 'inline';
+          btnLoader.style.display = 'none';
+          submitBtn.disabled = false;
         }
       } catch (error) {
-        errorMessage.textContent = 'حدث خطأ في الاتصال';
+        errorMessage.textContent = '✗ حدث خطأ في الاتصال. يرجى المحاولة مرة أخرى';
         errorMessage.style.display = 'block';
+        
+        // إعادة تفعيل الزر
+        btnText.style.display = 'inline';
+        btnLoader.style.display = 'none';
+        submitBtn.disabled = false;
       }
     });
   </script>

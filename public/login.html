@@ -8,33 +8,70 @@
 </head>
 <body>
 
-  <div class="container">
-    <h2>تسجيل الدخول</h2>
+  <div class="auth-container">
+    <div class="auth-header">
+      <h1 class="auth-logo">🌍 Travel Agency</h1>
+      <p class="auth-subtitle">أهلاً بعودتك! سجل دخولك للمتابعة</p>
+    </div>
 
     <div id="error-message" class="error-message" style="display: none;"></div>
+    <div id="success-message" class="success-message" style="display: none;"></div>
 
-    <form id="login-form">
-      <label>الإيميل</label>
-      <input type="email" name="email" id="email" required />
+    <form id="login-form" class="auth-form">
+      <div class="form-group">
+        <label for="email">البريد الإلكتروني</label>
+        <input 
+          type="email" 
+          name="email" 
+          id="email" 
+          placeholder="example@email.com"
+          required 
+        />
+      </div>
 
-      <label>كلمة المرور</label>
-      <input type="password" name="password" id="password" required />
+      <div class="form-group">
+        <label for="password">كلمة المرور</label>
+        <input 
+          type="password" 
+          name="password" 
+          id="password" 
+          placeholder="••••••••"
+          required 
+          minlength="6"
+        />
+      </div>
 
-      <button type="submit">دخول</button>
+      <button type="submit" class="btn-submit">
+        <span class="btn-text">تسجيل الدخول</span>
+        <span class="btn-loader" style="display: none;">⏳ جاري التحميل...</span>
+      </button>
     </form>
 
-    <p>ما عندك حساب؟ <a href="/register">سجّل الآن</a></p>
+    <div class="auth-footer">
+      <p>ليس لديك حساب؟ <a href="/register">سجّل حساب جديد</a></p>
+      <p><a href="/" class="back-link">← العودة للصفحة الرئيسية</a></p>
+    </div>
   </div>
 
   <script>
     const form = document.getElementById('login-form');
     const errorMessage = document.getElementById('error-message');
+    const successMessage = document.getElementById('success-message');
+    const btnText = document.querySelector('.btn-text');
+    const btnLoader = document.querySelector('.btn-loader');
+    const submitBtn = document.querySelector('.btn-submit');
 
     form.addEventListener('submit', async (e) => {
       e.preventDefault();
       
       // إخفاء رسائل الخطأ السابقة
       errorMessage.style.display = 'none';
+      successMessage.style.display = 'none';
+      
+      // إظهار حالة التحميل
+      btnText.style.display = 'none';
+      btnLoader.style.display = 'inline';
+      submitBtn.disabled = true;
       
       const formData = new FormData(form);
       const data = {
@@ -54,24 +91,30 @@
         const result = await response.json();
 
         if (result.success) {
-          // إظهار رسالة نجاح
-          errorMessage.style.display = 'none';
-          errorMessage.className = 'success-message';
-          errorMessage.textContent = 'تم تسجيل الدخول بنجاح! جاري التحويل...';
-          errorMessage.style.display = 'block';
+          successMessage.textContent = '✓ تم تسجيل الدخول بنجاح! جاري التحويل...';
+          successMessage.style.display = 'block';
           
-          // الانتقال للصفحة الرئيسية
+          // الانتقال للصفحة المناسبة حسب نوع المستخدم
           setTimeout(() => {
             window.location.href = result.redirect || '/dashboard';
           }, 1000);
         } else {
-          errorMessage.className = 'error-message';
-          errorMessage.textContent = result.error;
+          errorMessage.textContent = '✗ ' + result.error;
           errorMessage.style.display = 'block';
+          
+          // إعادة تفعيل الزر
+          btnText.style.display = 'inline';
+          btnLoader.style.display = 'none';
+          submitBtn.disabled = false;
         }
       } catch (error) {
-        errorMessage.textContent = 'حدث خطأ في الاتصال';
+        errorMessage.textContent = '✗ حدث خطأ في الاتصال. يرجى المحاولة مرة أخرى';
         errorMessage.style.display = 'block';
+        
+        // إعادة تفعيل الزر
+        btnText.style.display = 'inline';
+        btnLoader.style.display = 'none';
+        submitBtn.disabled = false;
       }
     });
   </script>

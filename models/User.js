@@ -24,6 +24,30 @@ const userSchema = new mongoose.Schema(
       enum: ['user', 'admin'],
       default: 'user',
     },
+    phone: {
+      type: String,
+      trim: true,
+    },
+    address: {
+      type: String,
+      trim: true,
+    },
+    dateOfBirth: {
+      type: Date,
+    },
+    accountStatus: {
+      type: String,
+      enum: ['active', 'suspended', 'inactive'],
+      default: 'active',
+    },
+    bookingHistory: [{
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'Booking'
+    }],
+    profileImage: {
+      type: String,
+      default: null,
+    },
   },
   { timestamps: true }
 );

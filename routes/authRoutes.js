@@ -29,14 +29,31 @@ router.get('/register', (req, res) => {
 
 // معالجة التسجيل (POST)
 router.post('/register', async (req, res) => {
-  const { name, email, password, confirmPassword } = req.body;
+  const { name, email, phone, address, dateOfBirth, password, confirmPassword } = req.body;
 
   try {
-    // تحقق من الحقول
+    // تحقق من الحقول الأساسية
     if (!name || !email || !password || !confirmPassword) {
       return res.status(400).json({
         success: false,
-        error: 'رجاءً عبّي كل الحقول'
+        error: 'رجاءً املأ جميع الحقول المطلوبة'
+      });
+    }
+
+    // التحقق من طول الاسم
+    if (name.trim().length < 3) {
+      return res.status(400).json({
+        success: false,
+        error: 'الاسم يجب أن يكون 3 أحرف على الأقل'
+      });
+    }
+
+    // التحقق من صحة البريد الإلكتروني
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+      return res.status(400).json({
+        success: false,
+        error: 'البريد الإلكتروني غير صالح'
       });
     }
 
@@ -47,12 +64,20 @@ router.post('/register', async (req, res) => {
       });
     }
 
+    // التحقق من قوة كلمة المرور
+    if (password.length < 6) {
+      return res.status(400).json({
+        success: false,
+        error: 'كلمة المرور يجب أن تكون 6 أحرف على الأقل'
+      });
+    }
+
     // تحقق هل الإيميل موجود
-    const existingUser = await User.findOne({ email });
+    const existingUser = await User.findOne({ email: email.toLowerCase() });
     if (existingUser) {
       return res.status(400).json({
         success: false,
-        error: 'هذا الإيميل مُسجَّل مسبقًا'
+        error: 'هذا البريد الإلكتروني مُسجَّل مسبقًا'
       });
     }
 
@@ -61,8 +86,11 @@ router.post('/register', async (req, res) => {
 
     // إنشاء المستخدم
     const newUser = await User.create({
-      name,
-      email,
+      name: name.trim(),
+      email: email.toLowerCase().trim(),
+      phone: phone ? phone.trim() : undefined,
+      address: address ? address.trim() : undefined,
+      dateOfBirth: dateOfBirth || undefined,
       password: hashedPassword,
     });
 
@@ -74,12 +102,19 @@ router.post('/register', async (req, res) => {
       role: newUser.role,
     };
 
-    res.json({ success: true, redirect: '/dashboard' });
+    // تحديد الصفحة المناسبة حسب نوع المستخدم
+    const redirectUrl = newUser.role === 'admin' ? '/admin/dashboard' : '/dashboard';
+
+    res.json({ 
+      success: true, 
+      redirect: redirectUrl,
+      message: 'تم إنشاء حسابك بنجاح'
+    });
   } catch (err) {
-    console.error(err);
+    console.error('Registration error:', err);
     res.status(500).json({
       success: false,
-      error: 'حدث خطأ، حاول مرة أخرى'
+      error: 'حدث خطأ أثناء إنشاء الحساب. يرجى المحاولة مرة أخرى'
     });
   }
 });
